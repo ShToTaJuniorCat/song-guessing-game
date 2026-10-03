@@ -1,6 +1,6 @@
-# Hitster
+# Song Guessing Game
 
-Hitster is a Spotify-powered music guessing game. It picks a random song from your liked tracks, starts playback, and asks you to identify the song title and artist while the track plays.
+This song guessing game is a Spotify-powered music challenge. It picks a random song from your liked tracks, starts playback, and asks you to identify the song title and artist while the track plays.
 
 The project is split into:
 
