@@ -28,8 +28,22 @@ import {
 } from "./api/client";
 import "./App.css";
 
-function normalizeGuess(value: string): string {
-  return value.trim().replace(/\s+/g, " ").toLowerCase();
+function normalizeName(value: string): string {
+  return value.toLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
+}
+
+function matchesGuess(guess: string, name: string): boolean {
+  const normalizedGuess = normalizeName(guess);
+  const normalizedName = normalizeName(name);
+
+  if (normalizedGuess.length < 3 || normalizedName.length < 3) {
+    return normalizedGuess === normalizedName;
+  }
+
+  return (
+    normalizedName.includes(normalizedGuess) ||
+    normalizedGuess.includes(normalizedName)
+  );
 }
 
 function getErrorMessage(error: unknown): string {
@@ -104,11 +118,9 @@ function App() {
     setIsSubmitting(true);
     try {
       const song = await getCurrentSong();
-      const guessedArtist = normalizeGuess(artistGuess);
-      const matchesSong =
-        normalizeGuess(songGuess) === normalizeGuess(song.name);
-      const matchesArtist = song.artists.some(
-        (artist) => normalizeGuess(artist) === guessedArtist,
+      const matchesSong = matchesGuess(songGuess, song.name);
+      const matchesArtist = song.artists.some((artist) =>
+        matchesGuess(artistGuess, artist),
       );
       setRevealedSong(song);
       setIsCorrect(matchesSong && matchesArtist);
@@ -341,7 +353,7 @@ function App() {
           <Box className="card-footer">
             <Typography className="footer-note">
               {revealedSong
-                ? "Titles and artists are checked without regard to capitalization."
+                ? "Capitalization and punctuation don't matter, and recognizable name fragments count."
                 : "No peeking. The song stays a mystery until you lock in your guess."}
             </Typography>
             <Button
